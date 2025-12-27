@@ -118,7 +118,7 @@ This app is **as/is** release, using at your own knowledge/risks.
 
 - GitHub Issues: Report bugs and request features
 - Documentation: See the docs/ directory
-- Security: Report security issues to security@example.com
+- Security: Report security issues to security@lotuschain.org
 
 ## Acknowledgments
 
