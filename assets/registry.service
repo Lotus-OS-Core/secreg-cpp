@@ -1,0 +1,53 @@
+[Unit]
+Description=SecReg Linux Registry Service
+Documentation=man:sreg(1) secregd(8)
+After=network.target local-fs.target time-sync.target
+Wants=network.target
+ConditionPathExists=/etc/secreg/config.toml
+
+[Service]
+Type=notify
+NotifyAccess=all
+ExecStart=/usr/bin/secregd --config /etc/secreg/config.toml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/secreg /run/secreg /var/log/secreg
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Capability dropping
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+# Seccomp filtering
+SystemCallFilter=@system-service @clock @debug @module @mount @obsolete @reboot @setuid @swap
+
+# Memory protection
+MemoryDenyWriteExecute=true
+LockPersonality=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=secregd
+
+# Environment
+Environment=SECREG_LOG_LEVEL=info
+
+# Timer for log rotation
+RuntimeDirectoryMode=0755
+StateDirectory=secreg
+LogsDirectory=secreg
+
+[Install]
+WantedBy=multi-user.target
+Also=registry-backup.timer

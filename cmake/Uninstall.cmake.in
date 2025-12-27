@@ -1,0 +1,32 @@
+# Uninstall target
+# This file generates the uninstall target
+
+if(NOT EXISTS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install manifest: @CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
+endif()
+
+file(READ "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt" manifests)
+string(REGEX REPLACE "\n" ";" manifests "${manifests}")
+
+foreach(manifest ${manifests})
+    if(EXISTS "${manifest}")
+        message(STATUS "Uninstalling: ${manifest}")
+        file(REMOVE "${manifest}")
+    else()
+        message(WARNING "File not found: ${manifest}")
+    endif()
+endforeach()
+
+# Remove directories if empty
+get_filename_component(dir "@CMAKE_INSTALL_PREFIX@" ABSOLUTE)
+file(STRINGS "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt" directories REGEX "^d.*")
+foreach(dir ${directories})
+    # Check if directory is empty
+    file(GLOB contents "${dir}/*")
+    if(NOT contents)
+        message(STATUS "Removing directory: ${dir}")
+        file(REMOVE_DIR "${dir}")
+    endif()
+endforeach()
+
+message(STATUS "Uninstall complete")

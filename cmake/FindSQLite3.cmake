@@ -1,0 +1,34 @@
+# FindSQLite3.cmake
+# Find the SQLite3 library
+
+# Find include directory
+find_path(SQLITE3_INCLUDE_DIR sqlite3.h)
+
+# Find library
+find_library(SQLITE3_LIBRARY NAMES sqlite3)
+
+# Handle QUIETLY and REQUIRED arguments
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SQLite3 
+    REQUIRED_VARS SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR)
+
+# Set output variables
+set(SQLITE3_FOUND ${SQLITE3_FOUND})
+set(SQLITE3_INCLUDE_DIRS ${SQLITE3_INCLUDE_DIR})
+set(SQLITE3_LIBRARIES ${SQLITE3_LIBRARY})
+
+# Mark as advanced
+mark_as_advanced(SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
+
+# Check version
+if(SQLITE3_INCLUDE_DIR)
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_MAJOR REGEX "#define SQLITE_VERSION_MAJOR")
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_MINOR REGEX "#define SQLITE_VERSION_MINOR")
+    file(STRINGS "${SQLITE3_INCLUDE_DIR}/sqlite3.h" SQLITE3_VERSION_PATCH REGEX "#define SQLITE_VERSION_PATCH")
+    
+    string(REGEX REPLACE ".*#define SQLITE_VERSION_MAJOR ([0-9]+).*" "\\1" SQLITE3_VERSION_MAJOR "${SQLITE3_VERSION_MAJOR}")
+    string(REGEX REPLACE ".*#define SQLITE_VERSION_MINOR ([0-9]+).*" "\\1" SQLITE3_VERSION_MINOR "${SQLITE3_VERSION_MINOR}")
+    string(REGEX REPLACE ".*#define SQLITE_VERSION_PATCH ([0-9]+).*" "\\1" SQLITE3_VERSION_PATCH "${SQLITE3_VERSION_PATCH}")
+    
+    set(SQLITE3_VERSION "${SQLITE3_VERSION_MAJOR}.${SQLITE3_VERSION_MINOR}.${SQLITE3_VERSION_PATCH}")
+endif()
